@@ -9,23 +9,39 @@
         "https://api.whatsapp.com/send?phone=9647851524429&text=السلام%20عليكم"
       ];
 
-      // نخزن آخر رقم مستخدم بالمتصفح
-      let lastIndex = localStorage.getItem("lastIndex");
-
-      if (lastIndex === null) {
-        lastIndex = 0;  // أول مرة
-      } else {
-        lastIndex = (parseInt(lastIndex) + 1) % links.length;
+      // دالة ترجع قيمة باراميتر (مثلا ttclid)
+      function getParam(name) {
+        const p = new URLSearchParams(location.search);
+        return p.get(name);
       }
 
-      localStorage.setItem("lastIndex", lastIndex);
+      // دالة هاش بسيطة ترجع رقم ثابت من النص
+      function hashString(str) {
+        let h = 0;
+        for (let i = 0; i < str.length; i++) {
+          h = (h * 31 + str.charCodeAt(i)) | 0;
+        }
+        return Math.abs(h);
+      }
+
+      // نقرأ ttclid من تيك توك إذا موجود
+      const clickId = getParam("ttclid");
+      let index;
+
+      if (clickId) {
+        // توزيع عالمي متساوي
+        index = hashString(clickId) % links.length;
+      } else {
+        // fallback: توزيع عشوائي
+        index = Math.floor(Math.random() * links.length);
+      }
 
       // نحول المستخدم للرابط
-      window.location.href = links[lastIndex];
+      window.location.href = links[index];
     </script>
     <title>جاري تحويلك...</title>
   </head>
   <body>
-    <p>يرجى الانتظار، جاري توجيهك إلى واتساب...</p>
+    <p>انتظر لحظة، يتم توجيهك إلى واتساب...</p>
   </body>
 </html>
